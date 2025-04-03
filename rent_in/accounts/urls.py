@@ -1,8 +1,12 @@
 
-from django.urls import path
-from .views import RentInHome,RentInRegisterVIew,TenantLoginView,ProfileDetailView,AccountLogoutView
+from django.urls import path, include
+from .views import RentInHome,RentInRegisterVIew,TenantLoginView,ProfileDetailView,AccountLogoutView, AccountApiViewset,TenantRegisterApi,TenantLoginAPIView
 from django.contrib.auth import views
 from django.contrib.auth import views as auth_views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'profile',AccountApiViewset)
 urlpatterns=[
     path('', view=RentInHome.as_view(), name='home'),
     path('login/', view=TenantLoginView.as_view(template_name ='registration/login.html'), name='login'),
@@ -19,5 +23,7 @@ urlpatterns=[
     # Password Change
     path('password_change/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change_form.html'), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
-
+    path('api/register/', view=TenantRegisterApi.as_view(),name='register-api' ),
+   path('api/login/', view=TenantLoginAPIView.as_view(), name='login-api'),
+   path('api/', include(router.urls)),
 ]

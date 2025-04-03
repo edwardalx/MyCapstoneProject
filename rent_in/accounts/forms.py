@@ -26,3 +26,15 @@ class TenantLoginForm(AuthenticationForm):
     class Meta:
         model = Tenant
         fields = ["username",'password']
+    
+class TenantUpdateForm(forms.Form):
+
+    id_image = forms.ImageField(required=False)
+    first_name = forms.CharField(required=True, max_length=200)
+    last_name = forms.CharField(required=True, max_length=200)
+    email = forms.EmailField(required=True)  # Change to required=True
+
+    class Meta:
+        model = Tenant
+        fields = ["id_image", "first_name", "last_name", "email"]
+
