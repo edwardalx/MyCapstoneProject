@@ -1,0 +1,39 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Profile | RentIn{% endblock %}
+
+{% block content %}
+<!-- Load static files -->
+{% load static %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="text-center">Profile Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Profile Picture -->
+                {% if tenant.profile_pic %}
+                    <div class="text-center mb-3">
+                        <img src="{{ tenant.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                    </div>
+                {% else %}
+                    <div class="text-center mb-3">
+                        <img src="{% static 'accounts/default-profile.jpg' %}" alt="Default Profile Picture" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                    </div>
+                {% endif %}
+                
+                <!-- Personal Information -->
+                <h5>Name: {{ tenant.fname }} {{ tenant.lname }}</h5>
+                <p><strong>Email:</strong> {{ tenant.email }}</p>
+                <p><strong>Phone Number:</strong> {{ tenant.phoneNo }}</p>
+
+                <!-- Additional profile details can be added below -->
+                <p><strong>Address:</strong> {{ tenant.address }}</p> <!-- If you have an address field in your model -->
+                
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a> <!-- Link to edit profile -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
