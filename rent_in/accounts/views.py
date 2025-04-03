@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
 from .models import Tenant
 from django.contrib.auth.mixins import LoginRequiredMixin
-from rest_framework import viewsets,views,generics,status
+from rest_framework import viewsets,generics,status
 from .serializers import TenantSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -17,7 +17,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 # Create your views here.
 
-User = get_user_model()
 class RentInHome(generic.TemplateView):
     template_name ='accounts/base.html'
 
@@ -63,7 +62,7 @@ class TenantRegisterApi(generics.CreateAPIView):
     serializer_class =TenantSerializer
 
 # This code is not even needed as simple will handle login and logoutjwt
-class  TenantLoginAPIView(views.APIView):   
+class  TenantLoginAPIView(generics.GenericAPIView):   
     def post(self ,request):
         username = request.data.get('username')
         password = request.data.get('password')
