@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'accounts',
 ]
 
@@ -145,3 +146,4 @@ SIMPLE_JWT = {
 }
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+# AUTH_USER_MODEL = 'accounts.CustomUser'
