@@ -4,7 +4,7 @@ from django.conf import settings
 
 # Create your models here.
 class Tenant(User):
-    id_image = models.ImageField(upload_to='properties_images/', blank=True, null=True)
+    id_image = models.ImageField(upload_to='tenant_images/', blank=True, null=True)
     def __str__(self):
         return f"Name: {self.first_name}  Mobile:{self.phoneNumber} "
 

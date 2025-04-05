@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 # Create your views here.
 
+# User = get_user_model()
 class RentInHome(generic.TemplateView):
     template_name ='accounts/base.html'
 
