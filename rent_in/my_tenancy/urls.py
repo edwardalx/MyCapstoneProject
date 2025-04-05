@@ -7,5 +7,5 @@ router.register(r'profile',TenancyApiViewset)
 
 
 urlpatterns = [
-path('api/', include(router.urls)),
+path('api/tenacy', include(router.urls)),
 ]

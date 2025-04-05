@@ -24,4 +24,4 @@ class Tenancy_Agreement(models.Model):
         return None
 
     def __str__(self):
-        return f"Tenant: {self.tenant.first_name} Contract End: {self.contract_end_date} Amount Left: {self.amount_left()}"
+        return f"Tenant: {self.tenant.user.first_name} Contract End: {self.contract_end_date} Amount Left: {self.amount_left()}"
