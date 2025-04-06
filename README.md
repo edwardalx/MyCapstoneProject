@@ -1,15 +1,21 @@
 # MyCapstoneProject
 # Rentin App
 
-## ✅ What Has Been Achieved
+##  What Has Been Achieved
 
-- Created models, forms, and serializers
-- Created templates and rendered them on the frontend
-- Created APIs and written unit tests for them
+- **Models, Forms, and Serializers:**  
+  Implemented core models for Tenants, Properties, Units, Payments, and related forms and serializers.
 
----
+- **Frontend Templates:**  
+  Created and rendered HTML templates to present property data and forms on the frontend.
 
-## 🔧 Areas for Improvement
+- **API Development:**  
+  Built RESTful APIs using Django REST Framework (DRF) for all core resources.
+
+- **Unit Testing:**  
+  Written tests for various API endpoints to validate their behavior and functionality.
+
+##  Areas for Improvement
 
 1. Improve frontend URLs to be more relatable (user-friendly)
 2. Investigate how to allow users to select a property and unit on the frontend and proceed to payment
