@@ -13,7 +13,7 @@ class Property(models.Model):
 
 class Unit(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='units')
-    room_number = models.CharField(max_length=14)
+    room_number = models.CharField(max_length=14, blank=True, null=True)
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
 

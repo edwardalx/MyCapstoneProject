@@ -20,4 +20,4 @@ class Payment(models.Model):
         self.tenancy_agreement.total_amount_paid = self.total_amount_paid 
         self.tenancy_agreement.save()
     def __str__(self):
-        return f"{self.tenant.first_name} Amount Paid: {self.amount_paid} 'Amount Left:{self.amount_left}"
+        return f"{self.tenant.user.first_name} Amount Paid: {self.amount_paid} 'Amount Left:{self.amount_left}"
