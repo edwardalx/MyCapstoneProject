@@ -34,7 +34,7 @@
 
 
 
- def test_Unit_CreateView(self):
+ <!-- def test_Unit_CreateView(self):
         # Ensure 'room_number' is a string and 'property' is the ID of an existing property.
         data = { 
             'property': 1,  # This should be the ID of an existing property.
@@ -50,4 +50,4 @@
         print(response.data)
         
         # Check if the response code is 201 (Created)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED) -->
