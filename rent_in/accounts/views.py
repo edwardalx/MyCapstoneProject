@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 from rest_framework import permissions
 # Create your views here.
 
-# User = get_user_model()
+User = get_user_model()
 class RentInHome(generic.TemplateView):
     template_name ='accounts/base.html'
 
@@ -54,10 +54,11 @@ class AccountLogoutView(views.LogoutView):
     # success_url = 'login'
     
 
-class AccountApiViewset(viewsets.ModelViewSet):
+class TenantApiViewset(viewsets.ModelViewSet):
     model = Tenant
     queryset = Tenant.objects.all()
     serializer_class = TenantSerializer
+    permission_classes =[permissions.IsAuthenticated]
 
 class TenantRegisterApi(generics.CreateAPIView):
     model =Tenant

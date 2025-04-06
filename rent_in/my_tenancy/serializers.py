@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Tenancy_Agreement
-from my_properties.serializers import PropertySerialzer, UnitSerialzer
+from my_properties.serializers import PropertySerialzer, UnitSerializer
 from accounts.serializers import TenantSerializer
 from my_properties.models import Property
 from accounts.models import Tenant
@@ -8,7 +8,7 @@ from accounts.models import Tenant
 class TenancySerialzer(serializers.ModelSerializer):
     tenant = TenantSerializer(read_only = True)
     property = PropertySerialzer(read_only =True)
-    unit = UnitSerialzer(read_only = True)
+    unit = UnitSerializer(read_only = True)
 
     class Meta:
         model = Tenancy_Agreement

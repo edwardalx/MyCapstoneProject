@@ -2,7 +2,7 @@
 # Create your views here.
 from django.shortcuts import render
 from .models import Property,Unit,Image
-from .serializers import PropertySerialzer,UnitSerialzer,ImageSerialzer
+from .serializers import PropertySerialzer,UnitSerializer,ImageSerialzer
 from rest_framework import viewsets,generics
 from rest_framework import permissions
 from rest_framework import filters
@@ -41,7 +41,7 @@ class UpdateView(generics.UpdateAPIView):
 class UnitApiViewset(viewsets.ModelViewSet):
     model = Unit
     queryset = Unit.objects.all()
-    serializer_class = UnitSerialzer
+    serializer_class = UnitSerializer
 
 class ImageApiViewset(viewsets.ModelViewSet):
     model = Image
