@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="freeCodeCamp Accessibility Quiz practice project" />
+    <title>Rent In App</title>
+    <link rel="stylesheet" href="{%static 'css/new_styles.css'%}" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <header>
+      <img id="logo" alt="freeCodeCamp" src="https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg">
+      <h1>🏠<a href = "{% url 'home' %}">RentIn</a></h1>
+      <nav>
+        <ul>
+          <li><a href="{%url 'login'%}">LOGIN</a></li>
+          <li><a href="{%url 'register'%}">SIGN UP</a></li>
+          <li><a href="#css-questions">PROPERTIES</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <header class="header">
+        <h1>LIST OF PROPERTIES</h1>
+      </header>
+      <div class="gallery">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/1.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/2.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/3.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/4.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/5.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/6.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/7.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/8.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/9.jpg">
+      </div>
+    </main>
+    <footer>
+      <address>
+        <a href="https://freecodecamp.org">EdwardProperies</a><br />
+        Offinso<br />
+        Ashanti<br />
+        Ghana
+      </address>
+    </footer>
+  </body>
+</html>

@@ -15,9 +15,9 @@ class TenantSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
-    def get_full_name(self, obj):
-        fullname = f"{obj.first_name}  {obj.last_name}"
-        return fullname
+    # def get_full_name(self, obj):
+    #     fullname = f"{obj.first_name}  {obj.last_name}"
+    #     return fullname
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)  
         return user
