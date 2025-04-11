@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 class Tenant(AbstractUser):   
     id_image = models.ImageField(upload_to='tenant_images/', blank=True, null=True)
+    age = models.IntegerField(blank=True,null=True )
     
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]

@@ -1,25 +1,28 @@
-{% extends "accounts/base.html" %}
+{% extends "accounts/new_base.html" %}
 
 {% block title %}Login | RentIn{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="text-center">Login</h2>
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="id_username" class="form-label">Phone Number</label>
-                <input type="text" class="form-control" name="username" id="id_username" required>
-            </div>
-            <div class="mb-3">
-                <label for="id_password" class="form-label">Password</label>
-                <input type="password" class="form-control" name="password" id="id_password" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
+<main>
+    <!-- <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center">Login</h2> -->
+            <form method="post" action="{% url 'login' %}">
+                <fieldset>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" name="username" id="id_username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="id_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </fieldset>
+            </form>
 
-        {% if form.errors %}
+            {% if form.errors %}
             <div class="alert alert-danger mt-3">
                 {% for field in form %}
                     {% for error in field.errors %}
@@ -27,12 +30,13 @@
                     {% endfor %}
                 {% endfor %}
             </div>
-        {% endif %}
+            {% endif %}
 
-        <p class="text-center mt-3">
-            <a href="{% url 'password_reset' %}">Forgot password?</a> | 
-            <a href="{% url 'register' %}">Register</a>
-        </p>
-    </div>
-</div>
+            <p class="text-center mt-3">
+                <a href="{% url 'password_reset' %}">Forgot password?</a> | 
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+        <!-- </div>
+    </div> -->
+</main>
 {% endblock %}

@@ -24,7 +24,7 @@ class RentInHome(generic.TemplateView):
 
 class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
-    template_name = 'accounts/register.html'
+    template_name = 'accounts/new_register.html'
     success_url = reverse_lazy('login')
 
 class TenantLoginView(views.LoginView):
