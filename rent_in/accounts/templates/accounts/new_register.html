@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="{%static 'css/new_register.css'%}" />
+  </head>
+  <body>
+    <h1>Registration Form</h1>
+    <p>Please fill out this form with the required information</p>
+    <form id="register-form" method="post" action="{%url 'register'%}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <fieldset>
+        <label for="id_username" >Phone Number: <input input type="text"  name="username" id="id_username" required></label>
+        <label for="id_first_name">Enter Your First Name: <input id="id_first_name" name="first_name" type="text" required ></label>
+        <label for="Id_last_name">Enter Your Last Name: <input id="id_last_name" name="last_name" type="text" required ></label>
+        <label for="email">Enter Your Email: <input id="id_email" name="email" type="email" required ></label>
+        <label for="id_password1">Create a  Password: <input id="id_password1" name="password1" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required /></label>
+        <label for="id_password2">Confirm Password: <input id="id_password2" name="password2" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required /></label>
+      </fieldset>
+      <fieldset>
+        <label for="id_id_image">Upload a profile picture: <input id="id_id_image" type="file" name="id_image" /></label>
+        <label for="id_age">Input your age (years): <input id="id_age" type="number" name="age" min="16" max="120" required></label>
+    
+        <label for="bio">Any Recommendations/Comments?:
+          <textarea id="bio" name="bio" rows="3" cols="30" placeholder="Write your recommendation here..."></textarea>
+        </label>
+      </fieldset>
+      <label for="terms-and-conditions">
+        <input class="inline" id="terms-and-conditions" type="checkbox" required name="terms-and-conditions" required> I accept the <a href="https://www.freecodecamp.org/news/terms-of-service/">terms and conditions</a>
+      </label>
+      <input type="submit" value="Submit" /> 
+      <section >
+        <a href="{% url 'login' %}"><button type="button">LOGIN</button></a>
+        <a href="{% url 'home' %}"><button type="button">HOME</button></a>
+    </section>
+      
+      {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </form>
+  </body>
+</html>

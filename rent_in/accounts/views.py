@@ -20,11 +20,11 @@ from rest_framework import permissions
 
 User = get_user_model()
 class RentInHome(generic.TemplateView):
-    template_name ='accounts/base.html'
+    template_name ='accounts/new_base.html'
 
 class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
-    template_name = 'accounts/register.html'
+    template_name = 'accounts/new_register.html'
     success_url = reverse_lazy('login')
 
 class TenantLoginView(views.LoginView):
