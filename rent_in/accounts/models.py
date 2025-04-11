@@ -10,7 +10,7 @@ class Tenant(AbstractUser):
     age = models.IntegerField(blank=True,null=True )
     
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+    REQUIRED_FIELDS = ["email"]
     groups = models.ManyToManyField(Group, related_name="customer_groups", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="customer_permissions", blank=True)
     def __str__(self):

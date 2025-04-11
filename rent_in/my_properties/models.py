@@ -5,14 +5,15 @@ class Property(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=200)
     no_of_units = models.IntegerField(blank=True, null=True)
-    cost_of_rent = models.IntegerField(blank=True, null=True)
-    availability = models.IntegerField()  # Number of available units
+    no_of_floors = models.IntegerField(blank=True, null=True)
+    availability = models.BooleanField()
 
     def __str__(self):
         return f"Property: {self.name}"
 
 class Unit(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='units')
+    floor = models.IntegerField()
     room_number = models.CharField(max_length=14, blank=True, null=True)
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
@@ -29,7 +30,7 @@ class Image(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images', null=True, blank=True)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='images', null=True, blank=True)
     description = models.CharField(max_length=150)
-    photo = models.ImageField(upload_to='properties/')
+    photo = models.ImageField(upload_to='properties_images/')
 
     def __str__(self):
         return f"Image for {self.property or self.unit}"

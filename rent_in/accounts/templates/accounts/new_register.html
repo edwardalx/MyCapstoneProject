@@ -16,8 +16,8 @@
         <label for="id_first_name">Enter Your First Name: <input id="id_first_name" name="first_name" type="text" required ></label>
         <label for="Id_last_name">Enter Your Last Name: <input id="id_last_name" name="last_name" type="text" required ></label>
         <label for="email">Enter Your Email: <input id="id_email" name="email" type="email" required ></label>
-        <label for="id_password1">Create a  Password: <input id="id_password1" name="password1" type="password" pattern="[a-z0-5]{8,}" required /></label>
-        <label for="id_password2">Confirm Password: <input id="id_password2" name="password2" type="password" pattern="[a-z0-5]{8,}" required /></label>
+        <label for="id_password1">Create a  Password: <input id="id_password1" name="password1" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required /></label>
+        <label for="id_password2">Confirm Password: <input id="id_password2" name="password2" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required /></label>
       </fieldset>
       <fieldset>
         <label for="id_id_image">Upload a profile picture: <input id="id_id_image" type="file" name="id_image" /></label>

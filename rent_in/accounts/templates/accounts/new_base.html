@@ -15,7 +15,16 @@
       <h1>🏠<a href = "{% url 'home' %}">RentIn</a></h1>
       <nav>
         <ul>
+          {% if user.is_authenticated %}
+          <li >
+              <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="transparent-btn">LOGOUT</button>
+              </form>
+          </li>
+          {% else %}
           <li><a href="{%url 'login'%}">LOGIN</a></li>
+          {% endif %}
           <li><a href="{% url 'register' %}">REGISTER</a></li>
           <li><a href="#css-questions">PROPERTIES</a></li>
         </ul>

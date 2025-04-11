@@ -43,7 +43,7 @@ h1 {
 
 nav {
   width: 100%;
-  max-width: 300px;
+  max-width: 350px;
   height: 50px;
 }
 
@@ -64,6 +64,18 @@ nav > ul > li {
   padding: 0.2rem;
   display: block;
   white-space: nowrap; 
+}
+.transparent-btn {
+  color: #dfdfe2;
+  margin: inherit;
+  padding: inherit;
+  display: block;
+  white-space: nowrap; 
+  font-size: inherit;
+  cursor: none;
+  outline: none;
+  background: transparent;
+  border: transparent;
 }
 
 nav > ul > li:hover {
