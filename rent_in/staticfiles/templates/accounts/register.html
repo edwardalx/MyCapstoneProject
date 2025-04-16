@@ -1,0 +1,64 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Tenant Registration{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Tenant Registration</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="register-form" method="post" action="{% url 'register' %}" enctype="multipart/form-data" class="card p-4 shadow" onsubmit="return validateForm()">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Form Validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Registration page loaded");
+
+    // Ensure the form is being detected
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(event) {
+            console.log("Register form submitted");
+        });
+    }
+});
+
+// Basic client-side validation
+function validateForm() {
+    const username = document.getElementById('id_phone_no').value.trim();
+    const email = document.getElementById('id_email').value.trim();
+    
+    if (username === "") {
+        alert("Phone Number is required.");
+        return false;
+    }
+    
+    if (email === "" || !email.includes("@")) {
+        alert("Please enter a valid email address.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+{% endblock %}
