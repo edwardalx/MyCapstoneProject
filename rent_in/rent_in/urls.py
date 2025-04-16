@@ -23,7 +23,7 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
-    path('accounts/', include('accounts.urls')),
+    path('', include('accounts.urls')),
     path('payments/', include('my_payments.urls')),
     path('tenancy/', include('my_tenancy.urls')),
     path('property/', include('my_properties.urls')),
