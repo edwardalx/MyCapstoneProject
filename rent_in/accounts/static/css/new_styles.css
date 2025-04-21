@@ -9,7 +9,73 @@
     flex-wrap: wrap;
   }
 }
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
 
+  a {
+    color: #bb86fc;
+  }
+}
+/* Base layout reset (optional but useful)*/
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/* Ensure body and html take full width */
+body, html {
+  width: 100%;
+  overflow-x: hidden;
+}
+/* Make containers responsive */
+/* .container, .navbar, .login-form {
+  width: 100%;
+  max-width: 100%;
+} */ 
+/* Mobile specific adjustments */
+@media (max-width: 600px) {
+  .navbar {
+    align-items: flex-start;
+  }
+
+  .navbar {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px; /* Optional spacing between items */
+    /*scrollbar-width: none;  For Firefox */
+  }
+  
+  /*.navbarKs::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, etc }
+    */
+  
+
+  .login-form {
+    padding: 20px;
+    width: 100%;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+  }
+
+  .login-form button,
+  .login-form input[type="submit"] {
+    width: 80%;
+  }
+
+  img {
+    max-width: 80%;
+    height: auto;
+    display: block;
+  }
+}
 
 body {
   background: #f5f6f7;
@@ -31,8 +97,8 @@ header {
 #logo {
   width: max(10rem, 18vw);
   background-color: #0a0a23;
-  aspect-ratio: 35 / 4;
-  padding: 0.4rem;
+  aspect-ratio: 36 / 6;
+  padding: 0.05rem;
 }
 
 h1 {
