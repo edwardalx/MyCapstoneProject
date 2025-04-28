@@ -13,8 +13,8 @@
     <header>
       <img id="logo" alt="freeCodeCamp" src="https://raw.githubusercontent.com/edwardalx/MyCapstoneProject/refs/heads/main/rent_in/tenant_images/house%20logo.jpg">
       <h1>🏠<a href = "{% url 'home' %}">RentIn</a></h1>
-      <nav>
-        <ul>
+      <nav class="navbar">
+        <ul class="nav-links">
           {% if user.is_authenticated %}
           <li >
               <form method="post" action="{% url 'logout' %}">
