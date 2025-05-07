@@ -22,6 +22,8 @@
                   <button type="submit" class="transparent-btn">LOGOUT</button>
               </form>
           </li>
+          <li><a href="{% url 'make_payment' %}">MAKE PAYMENT</a></li>
+          <li><a href="{% url 'payment_history' %}">PAYMENT HISTORY</a></li>
           {% else %}
           <li><a href="{%url 'login'%}">LOGIN</a></li>
           {% endif %}

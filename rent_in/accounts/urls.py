@@ -9,8 +9,8 @@ router.register(r'tenant',views.TenantApiViewset)
 urlpatterns=[
     path('', view=views.RentInHome.as_view(), name='home'),
     path('login/', view=views.TenantLoginView.as_view(template_name ='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logged_out.html'), name='logout'),
-    # path('logout/', AccountLogoutView.as_view(), name='logout'),
+    #path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logged_out.html'), name='logout'),
+     path('logout/',views.AccountLogoutView.as_view(), name='logout'),
     path('register/', view=views.RentInRegisterVIew.as_view(), name='register' ),
     path('profile/', views.ProfileDetailView.as_view(), name='profile'),
     path('profile-update/', views.ProfileDetailView.as_view(), name='edit_profile'),

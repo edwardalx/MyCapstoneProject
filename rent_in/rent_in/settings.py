@@ -150,9 +150,11 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Token expires in 30 mins
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),  # Token expires in 30 mins
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token lasts 1 day
 }
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 AUTH_USER_MODEL = 'accounts.Tenant'
+PAYSTACK_SECRET_KEY = 'sk_test_xxx'
+PAYSTACK_PUBLIC_KEY = 'pk_test_xxx'
