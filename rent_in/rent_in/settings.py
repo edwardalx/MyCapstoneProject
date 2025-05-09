@@ -156,5 +156,18 @@ SIMPLE_JWT = {
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 AUTH_USER_MODEL = 'accounts.Tenant'
-PAYSTACK_SECRET_KEY = 'sk_test_xxx'
-PAYSTACK_PUBLIC_KEY = 'pk_test_xxx'
+PAYSTACK_SECRET_KEY = 'sk_test_b847ee6b2d0941ae038dd335d22435d9b11c16a6'
+PAYSTACK_PUBLIC_KEY = 'pk_test_6dac536ffd7a4e361b1cc91ce3f80ed321b7bc69'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
