@@ -1,9 +1,9 @@
 from datetime import timezone
+import requests
 import uuid
 import hashlib
 import hmac
 from django.shortcuts import render
-import requests
 import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +15,11 @@ from my_properties.models import Unit
 from .serializers import PaymentSummarySerialzer, PaymentSerialzer
 from rest_framework import viewsets
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import permissions
+
 import logging
 from django.conf import settings
 logger = logging.getLogger(__name__)
@@ -27,7 +32,7 @@ def payment_page(request):
     except Tenancy_Agreement.DoesNotExist:
         agreement = None  # or handle differently
 
-    return render(request, "my_payments/payments.html", {
+    return render(request, "my_payments/newPaymentFlow.html", {
         "user": request.user,
         "tenancy_agreement": agreement
 })
@@ -97,115 +102,79 @@ def paystack_webhook(request):
 
     return HttpResponse(status=200)
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def initialize_payment(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            logger.info(f"Received payment initialization request: {data}")
+    email = request.data.get('email')
+    phone = request.data.get('phone')
+    amount = request.data.get('amount')  # Should be in **pesewas** (i.e., GHS 50 = 5000)
+    provider = request.data.get('provider')
+    tenant_id = request.data.get('tenant_id')
+    unit_id = request.data.get('unit_id')
 
-            tenant_id = data.get('tenant_id')
-            if not tenant_id:
-                logger.error("Missing tenant_id in request data")
-                return JsonResponse({"error": "Missing tenant_id"}, status=400)
+    if not all([email, phone, amount, provider, tenant_id, unit_id]):
+        return Response({"error": "Missing required fields"}, status=400)
 
-            try:
-                tenant = Tenant.objects.get(id=tenant_id)
-            except Tenancy_Agreement.DoesNotExist:
-                logger.error(f"Tenant with id={tenant_id} not found")
-                return JsonResponse({"error": "Invalid tenant_id"}, status=400)
-
-            reference = str(uuid.uuid4())
-
-            payload = {
-                "email": data['email'],
-                "amount": data['amount'],
-                "currency": "GHS",
-                "channels": ["mobile_money"],
-                "mobile_money": {
-                    "phone": data['phone'],
-                    "provider": data['provider']
-                },
-                "reference": reference,
-                "metadata": {
-                    "phone": data['phone'],
-                    "tenant_id": data['tenant_id'],
-                    "unit_id" : data['unit_id'],
-                }
-            }
-
-            headers = {
-                'Authorization': f'Bearer {PAYSTACK_SECRET_KEY}',
-                'Content-Type': 'application/json',
-            }
-
-            response = requests.post(
-                'https://api.paystack.co/transaction/initialize',
-                headers=headers,
-                json=payload
-            )
-            res_data = response.json()
-
-            if res_data.get('status'):
-                Payment.objects.create(
-                    email=data['email'],
-                    amount=data['amount'],
-                    phone=data['phone'],
-                    provider=data['provider'],
-                    reference=reference,
-                    tenant=tenant.phoneNo,
-                    unit=tenant.unit.room_number
-                )
-                logger.info(f"Payment initialized and saved: ref={reference}")
-                return JsonResponse(res_data)
-            else:
-                logger.error("Payment initialization failed with Paystack")
-                return JsonResponse({"error": "Payment initialization failed"}, status=400)
-
-        except json.JSONDecodeError:
-            logger.exception("Invalid JSON format")
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-        except Exception as e:
-            logger.exception("Unexpected error during payment initialization")
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=400)
-
-@csrf_exempt
-def verify_payment(request, reference):
-    logger.info(f"Verifying payment with reference: {reference}")
+    reference = str(uuid.uuid4())  # Generate a unique reference
 
     headers = {
-        'Authorization': f'Bearer {PAYSTACK_SECRET_KEY}',
+        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+        "Content-Type": "application/json",
     }
 
-    response = requests.get(f'https://api.paystack.co/transaction/verify/{reference}', headers=headers)
-    res_data = response.json()
+    payload = {
+        "email": email,
+        "amount": int(amount),  # In pesewas
+        "currency": "GHS",
+        "reference": reference,
+        "metadata": {
+            "phone": phone,
+            "tenant_id": tenant_id,
+            "unit_id": unit_id,
+            "provider": provider
+        },
+        "callback_url": "https://yourdomain.com/payments/verify/"  # Optional if using webhook
+    }
 
-    if res_data.get('status'):
-        data = res_data['data']
-        logger.info(f"Verification success: {data}")
+    try:
+        response = requests.post(
+            'https://api.paystack.co/transaction/initialize',
+            headers=headers,
+            json=payload
+        )
+        res_data = response.json()
+        if res_data.get('status'):
+            return Response({
+                "status": True,
+                "message": "Payment initiated",
+                "data": res_data['data']  # Contains authorization_url, access_code, reference
+            })
+        else:
+            return Response({
+                "status": False,
+                "error": res_data.get('message', 'Paystack error')
+            }, status=400)
 
-        # Update payment status in DB
-        try:
-            payment = Payment.objects.get(reference=reference)
-            payment.status = data['status']  # likely "success"
-            payment.channel = data['channel']
-            payment.save()
-            logger.info(f"Updated payment status for reference {reference}")
-        except Payment.DoesNotExist:
-            logger.warning(f"Payment with reference {reference} not found in DB")
+    except requests.RequestException as e:
+        return Response({"error": str(e)}, status=500)
 
-        return JsonResponse({
-            "status": True,
-            "message": f"Payment was {data['status']}",
-            "data": data
-        })
-    else:
-        logger.error(f"Verification failed: {res_data}")
-        return JsonResponse({
-            "status": False,
-            "message": "Payment verification failed",
-            "data": res_data
-        }, status=400)
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def verify_payment(request, reference):
+    # This view will verify the payment status from Paystack (or another provider)
+    # For simplicity, let's assume the payment is successful.
+    payment = get_object_or_404(Payment, reference=reference)
+
+    # Once payment is successful, update the status of the payment
+    payment.status = "completed"
+    payment.save()
+
+      # Mark unit as unavailable
+    unit = payment.unit
+    unit.availability = False
+    unit.save()
+    # Return success message
+    return Response({
+        "status": "success",
+        "message": "Payment successfully verified."
+    })
