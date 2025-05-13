@@ -13,18 +13,18 @@
 //     });
 // });
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Page loaded');
+// document.addEventListener('DOMContentLoaded', function() {
+//     console.log('Page loaded');
 
-    // Handle login form submission
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();  // Prevent default form submission
-            console.log('Login form submitted');
-            this.submit();  // Manually submit the form
-        });
-    }
+//     // Handle login form submission
+//     const loginForm = document.getElementById('login-form');
+//     if (loginForm) {
+//         loginForm.addEventListener('submit', function(event) {
+//             event.preventDefault();  // Prevent default form submission
+//             console.log('Login form submitted');
+//             this.submit();  // Manually submit the form
+//         });
+//     }
 
     // Handle register form submission
     const registerForm = document.getElementById('register-form');
@@ -43,4 +43,3 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.toggle('dark-mode');
         });
     }
-});

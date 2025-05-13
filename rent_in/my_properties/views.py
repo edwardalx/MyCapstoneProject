@@ -43,6 +43,15 @@ class UnitApiViewset(viewsets.ModelViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
+class UnitListApiView(generics.ListAPIView):
+    model = Unit
+    serializer_class = UnitSerializer
+
+    def get_queryset(self):
+        property_id = self.kwargs['property']  # get 'Papose Flats' from URL
+        return Unit.objects.filter(property__id=property_id)
+
+
 class ImageApiViewset(viewsets.ModelViewSet):
     model = Image
     queryset = Image.objects.all()

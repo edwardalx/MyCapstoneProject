@@ -17,6 +17,7 @@ class Unit(models.Model):
     room_number = models.CharField(max_length=14, blank=True, null=True)
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
+    availability = models.BooleanField(default=True)
 
     class Meta:
         constraints = [

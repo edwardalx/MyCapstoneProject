@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="RentInApp" />
     <title>Rent In App</title>
+    <link rel="icon" href="{% static 'accounts/favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'accounts/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{%static 'css/new_styles.css'%}" />
     {% block extra_css %}{% endblock %}
   </head>
@@ -14,19 +16,8 @@
       <img id="logo" alt="freeCodeCamp" src="https://raw.githubusercontent.com/edwardalx/MyCapstoneProject/refs/heads/main/rent_in/tenant_images/house%20logo.jpg">
       <h1>🏠<a href = "{% url 'home' %}">RentIn</a></h1>
       <nav class="navbar">
-        <ul class="nav-links">
-          {% if user.is_authenticated %}
-          <li >
-              <form method="post" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button type="submit" class="transparent-btn">LOGOUT</button>
-              </form>
-          </li>
-          {% else %}
-          <li><a href="{%url 'login'%}">LOGIN</a></li>
-          {% endif %}
-          <li><a href="{% url 'register' %}">REGISTER</a></li>
-          <li><a href="#css-questions">PROPERTIES</a></li>
+        <ul class="nav-links" id="nav-links">
+          <!-- Will be filled by JS -->
         </ul>
       </nav>
     </header>
@@ -55,7 +46,10 @@
         Ghana
       </address>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
+    
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <!-- <script src="{% static 'js/auth.js' %}"></script> -->
+{% block extra_js %}{% endblock %}
   </body>
 </html>

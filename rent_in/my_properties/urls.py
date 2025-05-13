@@ -17,5 +17,6 @@ path('api/v1/property/<int:pk>/', view=views.DetailView.as_view(), name='retriev
 path('api/v1/property/create', view=views.CreateView.as_view(), name='create-property'),
 path('api/v1/property/update/<int:pk>/', view=views.UpdateView.as_view(), name='update-property'),
 path('api/v1/property/delete/<int:pk>/', view=views.DeleteView.as_view(), name='delete-property'),
+path('api/v1/unit/<str:property>/', views.UnitListApiView.as_view(), name='unit-detail'),
 
 ]
