@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import Tenant
-from my_properties.models import Property  # Update this import to your actual app name
+from my_properties.models import Unit # Update this import to your actual app name
 from my_tenancy.models import Tenancy_Agreement
 # Create your models here.
 
@@ -20,9 +20,8 @@ class Payment(models.Model):
     channel = models.CharField(max_length=30, default='mobile_money')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="payments")
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name="payments")
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='payments')
-    tenancy_agreement = models.ForeignKey(Tenancy_Agreement, on_delete=models.CASCADE, related_name="payments")
 
     def __str__(self):
         return f"{self.email} - {self.amount} GHS - {self.status}"

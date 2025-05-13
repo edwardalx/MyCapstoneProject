@@ -1,46 +1,63 @@
-{% extends "base.html" %}
+{% extends "accounts/new_base.html" %}
+
 {% block content %}
-  <section>
-    <h2>Make a Payment</h2>
+<section>
+  <h2>Make a Payment</h2>
+
+  {% if tenancy_agreement %}
     <form id="paymentForm">
       {% csrf_token %}
+      <input type="hidden" id="tenancy_agreement_id" value="{{ tenancy_agreement.id }}">
+
       <label>Email:</label><br>
       <input type="email" id="email" value="{{ user.email }}" required><br><br>
+
       <label>Phone Number:</label><br>
       <input type="text" id="phone" value="{{ user.phoneNo }}" required><br><br>
+
       <label>Amount (GHS):</label><br>
       <input type="number" id="amount" required><br><br>
+
       <label>Provider:</label><br>
       <select id="provider" required>
         <option value="mtn">MTN</option>
         <option value="vodafone">Vodafone</option>
         <option value="airteltigo">AirtelTigo</option>
       </select><br><br>
+
       <button type="button" onclick="payWithPaystack()">Pay Now</button>
     </form>
-  </section>
+  {% else %}
+    <p>You currently have no active tenancy agreement. Please select a Property and a Room</p>
+  {% endif %}
+</section>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
-function payWithPaystack(){
+function payWithPaystack() {
   const email = document.getElementById('email').value;
   const phone = document.getElementById('phone').value;
-  const amount = document.getElementById('amount').value * 100; // Convert to pesewas
+  const amount = parseFloat(document.getElementById('amount').value) * 100;
   const provider = document.getElementById('provider').value;
+  const tenancy_agreement_id = document.getElementById('tenancy_agreement_id').value;
 
-  // Step 1: Initialize on backend
-  fetch("/api/payments/initialize/", {
+  if (!amount || amount < 100) {
+    alert("Please enter a valid amount (at least 1 GHS)");
+    return;
+  }
+
+  fetch("/payments/api/initialize/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, phone, amount, provider })
+    body: JSON.stringify({ email, phone, amount, provider, tenancy_agreement_id })
   })
   .then(res => res.json())
   .then(data => {
-    if (data.status) {
+    if (data.status && data.data && data.data.reference) {
       const ref = data.data.reference;
 
       let handler = PaystackPop.setup({
@@ -49,27 +66,28 @@ function payWithPaystack(){
         amount: amount,
         currency: 'GHS',
         ref: ref,
-        metadata: {
-          phone: phone
+        metadata: { phone: phone },
+        callback: function(response) {
+          fetch(`/payments/api/verify/${response.reference}/`)
+            .then(res => res.json())
+            .then(result => {
+              alert("Payment " + result.message);
+              location.reload();  // Refresh after payment
+            });
         },
-        callback: function(response){
-          // Step 2: Verify with backend
-          fetch(`/api/payments/verify/${response.reference}/`)
-          .then(res => res.json())
-          .then(result => {
-            alert("Payment " + result.message);
-          });
-        },
-        onClose: function(){
+        onClose: function() {
           alert('Transaction cancelled');
         }
       });
       handler.openIframe();
     } else {
-      alert("Payment initialization failed");
+      alert("Payment initialization failed. " + (data.error || "Please try again."));
     }
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error("Error:", err);
+    alert("An error occurred while initializing payment.");
+  });
 }
 </script>
 {% endblock %}

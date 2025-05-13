@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'accounts',
     'my_properties',
     'my_tenancy',
-     'my_payments',
+    'my_payments',
+    
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # default
+SESSION_COOKIE_SECURE = False  # Only True in production with HTTPS
+CSRF_COOKIE_SECURE = False
+
 
 ROOT_URLCONF = 'rent_in.urls'
 
@@ -69,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
@@ -125,8 +132,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / "accounts",
+    os.path.join(BASE_DIR, 'accounts/static'),
 ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 ##For deployment
 # STATIC_URL = 'static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -150,11 +161,27 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),  # Token expires in 30 mins
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token lasts 1 day
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,  # Important for logout
+    'BLACKLIST_AFTER_ROTATION': True,  # Important for logout
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "/"
 AUTH_USER_MODEL = 'accounts.Tenant'
-PAYSTACK_SECRET_KEY = 'sk_test_xxx'
-PAYSTACK_PUBLIC_KEY = 'pk_test_xxx'
+PAYSTACK_SECRET_KEY = 'sk_test_b847ee6b2d0941ae038dd335d22435d9b11c16a6'
+PAYSTACK_PUBLIC_KEY = 'pk_test_6dac536ffd7a4e361b1cc91ce3f80ed321b7bc69'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
