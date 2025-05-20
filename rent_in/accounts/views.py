@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.views import generic
 from django.shortcuts import render
@@ -30,6 +31,10 @@ class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
     template_name = 'accounts/new_register.html'
     success_url = reverse_lazy('login')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "✅ Registration successful! You can now log in.")
+        return response
 
 class TenantLoginView(views.LoginView):
     form_class = TenantLoginForm
@@ -140,3 +145,17 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+def check_user_or_email(request):
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+
+    if username:
+        exists = Tenant.objects.filter(username=username).exists()
+        return JsonResponse({'exists': exists})
+    
+    if email:
+        exists = Tenant.objects.filter(email=email).exists()
+        return JsonResponse({'exists': exists})
+    
+    return JsonResponse({'exists': False})
