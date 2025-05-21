@@ -1,0 +1,62 @@
+<!-- {% extends "accounts/new_base.html" %}
+
+{% block content %}
+  <h1>Welcome to Rentin</h1>
+  <p>This is the home page content.</p>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function isTokenValid(token) {
+      const data = parseJwt(token);
+      if (!data || !data.exp) return false;
+      const now = Math.floor(Date.now() / 1000);
+      return data.exp > now;
+    }
+
+    const navLinks = document.getElementById("nav-links");
+    if (navLinks) {
+      const token = localStorage.getItem("access");
+      const isLoggedIn = token && isTokenValid(token);
+
+      if (isLoggedIn) {
+        navLinks.innerHTML = `
+          <li><button class="transparent-btn" onclick="logout()">LOGOUT</button></li>
+          <li><a href="/make_payment/">MAKE PAYMENT</a></li>
+          <li><a href="/payment_history/">PAYMENT HISTORY</a></li>
+          <li><a href="/register/">REGISTER</a></li>
+          <li><a href="#css-questions">PROPERTIES</a></li>
+        `;
+      } else {
+        navLinks.innerHTML = `
+          <li><a href="/login/">LOGIN</a></li>
+          <li><a href="/register/">REGISTER</a></li>
+          <li><a href="#css-questions">PROPERTIES</a></li>
+        `;
+      }
+    }
+
+    // function logout() {
+    //   localStorage.removeItem("access");
+    //   localStorage.removeItem("refresh");
+    //   window.location.href = "/login/";
+    // }
+
+    // window.logout = logout;
+  });
+</script>
+{% endblock %} -->
