@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.views import generic
 from django.shortcuts import render
@@ -9,28 +10,35 @@ from django.contrib.auth import get_user_model
 from .models import Tenant
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets,generics,status
-from .serializers import TenantSerializer
+from .serializers import TenantSerializer, PhoneTokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework import permissions
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.views import APIView
 # Create your views here.
 
 User = get_user_model()
 class RentInHome(generic.TemplateView):
-    template_name ='accounts/new_base.html'
+    template_name ='accounts/home.html'
 
 class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
     template_name = 'accounts/new_register.html'
     success_url = reverse_lazy('login')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "✅ Registration successful! You can now log in.")
+        return response
 
 class TenantLoginView(views.LoginView):
     form_class = TenantLoginForm
     template_name ='registration/login.html'
-    success_url = reverse_lazy('profile')
 class ProfileDetailView(LoginRequiredMixin, generic.DetailView ):
     model = Tenant
     template_name = 'accounts/profile_detail.html'
@@ -102,3 +110,52 @@ class LogoutAPIView(generic.View):
         
         return JsonResponse({'message': 'Logged out successfully'})
     
+
+class PhoneLoginView(TokenObtainPairView):
+    serializer_class = PhoneTokenObtainPairSerializer
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            user = User.objects.get(username=request.data['username'])
+            login(request, user)  # This establishes the session
+        return response
+
+@api_view(['POST'])
+def login_api(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+    return Response({'error': 'Invalid credentials'}, status=401)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+def check_user_or_email(request):
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+
+    if username:
+        exists = Tenant.objects.filter(username=username).exists()
+        return JsonResponse({'exists': exists})
+    
+    if email:
+        exists = Tenant.objects.filter(email=email).exists()
+        return JsonResponse({'exists': exists})
+    
+    return JsonResponse({'exists': False})
