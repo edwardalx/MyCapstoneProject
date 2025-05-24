@@ -4,6 +4,7 @@ from django.db import models
 class Property(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=200)
+    image_url = models.URLField(max_length=500,)
     no_of_units = models.IntegerField(blank=True, null=True)
     no_of_floors = models.IntegerField(blank=True, null=True)
     availability = models.BooleanField()

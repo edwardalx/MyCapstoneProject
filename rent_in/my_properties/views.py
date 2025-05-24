@@ -6,6 +6,7 @@ from .serializers import PropertySerialzer,UnitSerializer,ImageSerialzer
 from rest_framework import viewsets,generics
 from rest_framework import permissions
 from rest_framework import filters
+from django.views.generic import TemplateView
 class PropertyApiViewset(viewsets.ModelViewSet):
     model = Property
     queryset = Property.objects.all()
@@ -56,4 +57,13 @@ class ImageApiViewset(viewsets.ModelViewSet):
     model = Image
     queryset = Image.objects.all()
     serializer_class = ImageSerialzer
+
+class SelectUnitView(TemplateView):
+    template_name = 'accounts/select_unit.html'
+
+def property_list(request):
+    properties = Property.objects.all()
+    return render(request, 'accounts/propertyImg.html', {'properties': properties})
+
+
 
