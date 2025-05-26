@@ -1,0 +1,28 @@
+{% extends "accounts/new_base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/properties_list.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="gallery">
+       {% for property in properties %}
+      <div class="property-card"
+           data-id="{{ property.id }}"
+           data-name="{{ property.name|escapejs }}"
+           onclick="selectPropertyFromElement(this)">
+           
+        <img src="{{ property.image_url }}" alt="{{ property.name }}">
+        
+        <h3>{{ property.name }}</h3>
+        <p>{{ property.location }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  const selectUnitUrl = "{% url 'select_unit' %}";
+</script>
+<script src="{% static 'js/properties_list.js' %}"></script>
+{% endblock %}

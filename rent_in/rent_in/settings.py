@@ -58,8 +58,6 @@ MIDDLEWARE = [
     
 ]
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # default
-SESSION_COOKIE_SECURE = False  # Only True in production with HTTPS
-CSRF_COOKIE_SECURE = False
 
 
 ROOT_URLCONF = 'rent_in.urls'
@@ -104,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -133,6 +132,9 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'accounts/static'),
+]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'my_payments/static'),
 ]
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend'
@@ -185,3 +187,18 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+# #Security
+# SECURE_BROWSER_XSS_FILTER = True
+# X_FRAME_OPTIONS = 'DENY'
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# # Secure Cookies
+CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# # Enable SSL Redirect
+# SECURE_SSL_REDIRECT = True
+# # Set security headers
+# SECURE_HSTS_SECONDS = 31536000 
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True 
+# SECURE_HSTS_PRELOAD = True
+# # Tell Django to trust the proxy’s HTTPS header
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

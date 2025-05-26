@@ -11,7 +11,7 @@ from django.conf import settings
 from .models import Payment, PaymentSummary
 from accounts.models import Tenant
 from my_tenancy.models import Tenancy_Agreement
-from my_properties.models import Unit
+from my_properties.models import Property, Unit
 from .serializers import PaymentSummarySerialzer, PaymentSerialzer
 from rest_framework import viewsets
 from django.contrib.auth.decorators import login_required
@@ -27,15 +27,31 @@ logger = logging.getLogger(__name__)
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY  # Replace with your actual key
 @login_required
 def payment_page(request):
+    unit_id = request.GET.get("unit_id")
+    unit = None
+    property = None
+
+    # Try to get the unit if passed in querystring
+    if unit_id:
+        try:
+            unit = Unit.objects.select_related('property').get(id=unit_id)
+            property = unit.property
+        except Unit.DoesNotExist:
+            pass
+
+    # Get the tenant's tenancy agreement if it exists
     try:
         agreement = Tenancy_Agreement.objects.get(tenant=request.user)
     except Tenancy_Agreement.DoesNotExist:
-        agreement = None  # or handle differently
+        agreement = None
 
     return render(request, "my_payments/newPaymentFlow.html", {
         "user": request.user,
-        "tenancy_agreement": agreement
-})
+        "tenancy_agreement": agreement,
+        "unit": unit,
+        "property": property,
+        "properties": Property.objects.all(),  # Needed for the property <select>
+    })
 
 @login_required
 def payment_history(request):
@@ -107,15 +123,16 @@ def paystack_webhook(request):
 def initialize_payment(request):
     email = request.data.get('email')
     phone = request.data.get('phone')
-    amount = request.data.get('amount')  # Should be in **pesewas** (i.e., GHS 50 = 5000)
+    amount = request.data.get('amount')  # Should be in pesewas
     provider = request.data.get('provider')
-    tenant_id = request.data.get('tenant_id')
     unit_id = request.data.get('unit_id')
 
-    if not all([email, phone, amount, provider, tenant_id, unit_id]):
+    tenant_id = request.user.id  # ✅ Secure tenant_id from logged-in user
+
+    if not all([email, phone, amount, provider, unit_id]):
         return Response({"error": "Missing required fields"}, status=400)
 
-    reference = str(uuid.uuid4())  # Generate a unique reference
+    reference = str(uuid.uuid4())
 
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
@@ -124,7 +141,7 @@ def initialize_payment(request):
 
     payload = {
         "email": email,
-        "amount": int(amount),  # In pesewas
+        "amount": int(amount),
         "currency": "GHS",
         "reference": reference,
         "metadata": {
@@ -133,7 +150,7 @@ def initialize_payment(request):
             "unit_id": unit_id,
             "provider": provider
         },
-        "callback_url": "https://yourdomain.com/payments/verify/"  # Optional if using webhook
+        "callback_url": "https://yourdomain.com/payments/verify/"
     }
 
     try:
@@ -147,7 +164,7 @@ def initialize_payment(request):
             return Response({
                 "status": True,
                 "message": "Payment initiated",
-                "data": res_data['data']  # Contains authorization_url, access_code, reference
+                "data": res_data['data']
             })
         else:
             return Response({
@@ -157,6 +174,7 @@ def initialize_payment(request):
 
     except requests.RequestException as e:
         return Response({"error": str(e)}, status=500)
+
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])

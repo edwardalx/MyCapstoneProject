@@ -1,0 +1,40 @@
+{% extends "accounts/new_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/unit_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gallery">
+    {% for unit in units %}
+        <div class="unit-card" data-unit-id="{{ unit.id }}">
+            <img src="{{ unit.image_url }}" alt="Image of Unit {{ unit.room_number }}" class="unit-image">
+            <div class="unit-details">
+                <h3>Room {{ unit.room_number }}</h3>
+                <p>Floor: {{ unit.floor }}</p>
+                <p>Max Occupants: {{ unit.max_no_of_people }}</p>
+                <p>Price: ${{ unit.cost }}/month</p>
+                <p>Type: {{ unit.unit_type }}</p>
+                <button type="button" class="select-unit-btn">Select Unit</button>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-units">
+            <p>No units available for this property.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="payment-btn-container">
+    <button id="proceedToPaymentBtn" onclick="goToPayment()">
+        Proceed to Payment
+    </button>
+</div>
+
+<script src="{% static 'js/unit_list.js' %}"></script>
+<script>
+    // Pass Django URL to JavaScript
+    const makePaymentUrl = "{% url 'make_payment' %}";
+</script>
+{% endblock %}

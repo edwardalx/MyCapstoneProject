@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.views import generic
 from django.shortcuts import render
@@ -20,16 +21,26 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.views import APIView
+from my_properties.models import Property
 # Create your views here.
 
 User = get_user_model()
 class RentInHome(generic.TemplateView):
-    template_name ='accounts/home.html'
+    template_name = 'accounts/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['properties'] = Property.objects.all()
+        return context
 
 class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
     template_name = 'accounts/new_register.html'
     success_url = reverse_lazy('login')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "✅ Registration successful! You can now log in.")
+        return response
 
 class TenantLoginView(views.LoginView):
     form_class = TenantLoginForm
@@ -140,3 +151,17 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+def check_user_or_email(request):
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+
+    if username:
+        exists = Tenant.objects.filter(username=username).exists()
+        return JsonResponse({'exists': exists})
+    
+    if email:
+        exists = Tenant.objects.filter(email=email).exists()
+        return JsonResponse({'exists': exists})
+    
+    return JsonResponse({'exists': False})

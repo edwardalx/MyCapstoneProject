@@ -4,6 +4,7 @@ from django.db import models
 class Property(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=200)
+    image_url = models.URLField(max_length=500,)
     no_of_units = models.IntegerField(blank=True, null=True)
     no_of_floors = models.IntegerField(blank=True, null=True)
     availability = models.BooleanField()
@@ -15,10 +16,11 @@ class Unit(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='units')
     floor = models.IntegerField()
     room_number = models.CharField(max_length=14, blank=True, null=True)
+    image_url = models.URLField(max_length=500)
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
     availability = models.BooleanField(default=True)
-
+    unit_type = models.CharField(max_length=50, choices=[('studio', 'Studio'), ('1bed', '1 Bedroom')])
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['property', 'room_number'], name='unique_unit_per_property')
