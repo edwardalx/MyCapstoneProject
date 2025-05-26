@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
+// 🔐 Get CSRF token from cookies (for session auth)
 function getCSRFToken() {
   const name = 'csrftoken';
   const cookieValue = document.cookie
@@ -64,19 +65,32 @@ function getCSRFToken() {
   return cookieValue ? decodeURIComponent(cookieValue.split('=')[1]) : '';
 }
 
+// 💳 Initialize Paystack payment
 function payWithPaystack() {
   const email = document.getElementById('email').value;
   const phone = document.getElementById('phone').value;
   const amount = parseFloat(document.getElementById('amount').value) * 100; // Convert to pesewas
   const provider = document.getElementById('provider').value;
-  const tenant_id = document.getElementById('tenant_id').value;
   const unit_id = document.getElementById('unit_id').value;
 
-  fetch(window.initializePaymentUrl, {  // <--- YOUR NEW DRF VIEWSET ENDPOINT HERE
+  const accessToken = localStorage.getItem("access");  // 🔐 JWT token must be stored in localStorage
+
+  if (!email || !phone || !amount || !provider || !unit_id) {
+    alert("Please fill all required fields including selecting a payment provider.");
+    return;
+  }
+
+  if (!accessToken) {
+    alert("You're not logged in. Please log in first.");
+    return;
+  }
+
+  fetch(window.initializePaymentUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCSRFToken(),
+      'Authorization': `Bearer ${accessToken}`,  // 🔐 Important for DRF SimpleJWT
+      'X-CSRFToken': getCSRFToken(),             // Optional if you're also using CSRF
     },
     body: JSON.stringify({
       email,
@@ -86,17 +100,23 @@ function payWithPaystack() {
       unit_id,
     })
   })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(data => {
+          throw new Error(data.detail || "Unauthorized request");
+        });
+      }
+      return res.json();
+    })
     .then(data => {
       if (data.status && data.data && data.data.authorization_url) {
-        // ✅ Redirect user to Paystack payment page
-        window.location.href = data.data.authorization_url;
+        window.location.href = data.data.authorization_url; // ✅ Redirect to Paystack
       } else {
         alert("Payment error: " + (data.error || data.message));
       }
     })
     .catch(error => {
       console.error("Payment error:", error);
-      alert("Failed to initialize payment.");
+      alert("Failed to initialize payment: " + error.message);
     });
 }

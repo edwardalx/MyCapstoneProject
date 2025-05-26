@@ -22,7 +22,7 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-  const selectUnitUrl = "{% url 'select_unit' %}";
+  const selectUnitBaseUrl = "{% url 'select_unit' 0 %}";
 </script>
 <script src="{% static 'js/properties_list.js' %}"></script>
 {% endblock %}

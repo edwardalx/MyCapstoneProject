@@ -132,19 +132,18 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'accounts/static'),
-]
-STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'my_payments/static'),
 ]
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend'
 ]
 
-##For deployment
+# #For deployment
 # STATIC_URL = 'static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
+#     os.path.join(BASE_DIR, 'my_payments/static'),Ks
+#     os.path.join(BASE_DIR, 'accounts/static'),
 # ]
 
 
