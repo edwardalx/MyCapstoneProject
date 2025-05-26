@@ -53,8 +53,9 @@
       </address>
     </footer>
 <script>
-  const selectUnitUrl = "{% url 'select_unit' %}";
+  const selectUnitBaseUrl = "{% url 'select_unit' 0 %}";
 </script>
+
     <script src="{% static 'js/scripts.js' %}"></script>
     <script src="{% static 'js/properties_list.js' %}"></script>
     {% block extra_js %}{% endblock %}

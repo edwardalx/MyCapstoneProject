@@ -18,6 +18,6 @@ path('api/v1/property/create', view=views.CreateView.as_view(), name='create-pro
 path('api/v1/property/update/<int:pk>/', view=views.UpdateView.as_view(), name='update-property'),
 path('api/v1/property/delete/<int:pk>/', view=views.DeleteView.as_view(), name='delete-property'),
 path('api/v1/unit/<str:property>/', views.UnitListApiView.as_view(), name='unit-detail'),
-path('select-unit/', views.SelectUnitView.as_view(), name='select_unit'),
+path('select-unit/<int:property_id>/', views.unit_list, name='select_unit'),
 path('properties/', views.property_list, name='property_list'),
 ]

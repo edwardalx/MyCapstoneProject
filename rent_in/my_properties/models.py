@@ -20,7 +20,7 @@ class Unit(models.Model):
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
     availability = models.BooleanField(default=True)
-
+    unit_type = models.CharField(max_length=50, choices=[('studio', 'Studio'), ('1bed', '1 Bedroom')])
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['property', 'room_number'], name='unique_unit_per_property')

@@ -1,34 +1,58 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const selectButtons = document.querySelectorAll('.select-unit-btn');
-    const paymentSection = document.getElementById('payment-section');
-    const paymentBtn = document.getElementById('proceed-to-payment');
+document.addEventListener('DOMContentLoaded', function() {
+    const unitCards = document.querySelectorAll('.unit-card');
+    const paymentBtn = document.getElementById('proceedToPaymentBtn');
+    let selectedUnitId = null;
 
-    selectButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const unitId = this.dataset.unitId;
-            localStorage.setItem('selectedUnitId', unitId);
+    // Initialize the payment button as hidden
+    paymentBtn.style.display = 'none';
 
-            document.querySelectorAll('.unit-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            this.closest('.unit-card').classList.add('selected');
-            this.textContent = 'Selected!';
-            this.disabled = true;
+    // Add click event to each unit card
+    unitCards.forEach(card => {
+        const selectBtn = card.querySelector('.select-unit-btn');
+        
+        // Click handler for the entire card
+        card.addEventListener('click', function(e) {
+            // Don't trigger if clicking directly on the button
+            if (e.target === selectBtn) return;
+            
+            selectUnit(card);
+        });
 
-            paymentSection.style.display = 'block';
+        // Click handler for the select button
+        selectBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent card click from triggering
+            selectUnit(card);
         });
     });
 
-    paymentBtn.addEventListener('click', function () {
-        const unitId = localStorage.getItem('selectedUnitId');
-        const propertyId = localStorage.getItem('selectedPropertyId');
+    function selectUnit(card) {
+        // Deselect all units first
+        unitCards.forEach(c => {
+            c.classList.remove('selected');
+            const btn = c.querySelector('.select-unit-btn');
+            btn.textContent = 'Select Unit';
+            btn.classList.remove('selected');
+        });
 
-        if (!unitId || !propertyId) {
-            alert('Please select both a property and a unit before proceeding.');
+        // Select the clicked unit
+        card.classList.add('selected');
+        const selectBtn = card.querySelector('.select-unit-btn');
+        selectBtn.textContent = 'Selected!';
+        selectBtn.classList.add('selected');
+        selectedUnitId = card.dataset.unitId;
+
+        // Show the payment button
+        paymentBtn.style.display = 'inline-block';
+    }
+
+    // Payment button click handler
+    window.goToPayment = function() {
+        if (!selectedUnitId) {
+            alert('Please select a unit before proceeding to payment.');
             return;
         }
 
-        // ✅ Use the dynamic URL with query params
-        window.location.href = `${makePaymentUrl}?unit_id=${unitId}&property_id=${propertyId}`;
-    });
+        // Redirect to payment page with the selected unit ID
+        window.location.href = `${makePaymentUrl}?unit_id=${selectedUnitId}`;
+    };
 });
