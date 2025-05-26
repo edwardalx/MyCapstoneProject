@@ -1,25 +1,40 @@
 {% extends "accounts/new_base.html" %}
+{% load static %}
+
 {% block content %}
 <section>
   <h2>Make a Payment</h2>
 
-  <label for="property">Select Property:</label><br>
-  <select id="property" required>
-    <option value="">-- Select Property --</option>
-    {% for property in properties %}
-      <option value="{{ property.id }}">{{ property.name }}</option>
-    {% endfor %}
+  <!-- Property Dropdown -->
+  <label for="property">Property:</label><br>
+  <select id="property" name="property" required {% if property %}disabled{% endif %}>
+    {% if property %}
+      <option value="{{ property.id }}" selected>{{ property.name }}</option>
+    {% else %}
+      <option value="">-- Select Property --</option>
+      {% for p in properties %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+      {% endfor %}
+    {% endif %}
   </select><br><br>
 
-  <label for="unit">Select Room:</label><br>
-  <select id="unit" disabled required>
-    <option value="">-- Select Room --</option>
+  <!-- Unit Dropdown -->
+  <label for="unit">Room:</label><br>
+  <select id="unit" name="unit" required {% if unit %}disabled{% endif %}>
+    {% if unit %}
+      <option value="{{ unit.id }}" selected data-cost="{{ unit.cost }}">
+        Room {{ unit.room_number }} - GHS {{ unit.cost }}/month
+      </option>
+    {% else %}
+      <option value="">-- Select Room --</option>
+    {% endif %}
   </select><br><br>
 
-  <form id="paymentForm" style="display:none;">
+  <!-- Payment Form -->
+  <form id="paymentForm" {% if not unit %}style="display:none;"{% endif %}>
     {% csrf_token %}
     <input type="hidden" id="tenant_id" value="{{ user.id }}">
-    <input type="hidden" id="unit_id">
+    <input type="hidden" id="unit_id" value="{% if unit %}{{ unit.id }}{% endif %}">
 
     <label>Email:</label><br>
     <input type="email" id="email" value="{{ user.email }}" required><br><br>
@@ -28,10 +43,11 @@
     <input type="text" id="phone" value="{{ user.phoneNo }}" required><br><br>
 
     <label>Amount (GHS):</label><br>
-    <input type="number" id="amount" readonly><br><br>
+    <input type="number" id="amount" value="{% if unit %}{{ unit.cost }}{% endif %}" readonly><br><br>
 
     <label>Provider:</label><br>
     <select id="provider" required>
+      <option value="">-- Select Network --</option>
       <option value="mtn">MTN</option>
       <option value="vodafone">Vodafone</option>
       <option value="airteltigo">AirtelTigo</option>
@@ -43,77 +59,15 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-document.getElementById('property').addEventListener('change', function () {
-  const propertyId = this.value;
-  const unitSelect = document.getElementById('unit');
-  unitSelect.innerHTML = '<option value="">Loading...</option>';
-  unitSelect.disabled = true;
+  <!-- Indicates whether unit was prepopulated to auto-show form -->
+  {{ unit|yesno:"true,false"|json_script:"unit-data" }}
 
-  fetch(`/api/properties/${propertyId}/units/`)
-    .then(res => res.json())
-    .then(data => {
-      unitSelect.innerHTML = '<option value="">-- Select Room --</option>';
-      data.forEach(unit => {
-        unitSelect.innerHTML += `<option value="${unit.id}" data-cost="${unit.cost}">${unit.room_No}</option>`;
-      });
-      unitSelect.disabled = false;
-    });
-});
+  <!-- Set your URL route name here -->
+  <script>
+    window.initializePaymentUrl = "{% url 'initialize_payment' %}";
+  </script>
 
-document.getElementById('unit').addEventListener('change', function () {
-  const selected = this.selectedOptions[0];
-  const cost = selected.getAttribute('data-cost');
-  document.getElementById('amount').value = cost;
-  document.getElementById('unit_id').value = selected.value;
-  document.getElementById('paymentForm').style.display = 'block';
-});
-
-function payWithPaystack() {
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const amount = parseFloat(document.getElementById('amount').value) * 100;
-  const provider = document.getElementById('provider').value;
-  const tenant_id = document.getElementById('tenant_id').value;
-  const unit_id = document.getElementById('unit_id').value;
-
-  fetch("/payments/api/initialize/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, phone, amount, provider, tenant_id, unit_id })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status && data.data.reference) {
-      let handler = PaystackPop.setup({
-        key: '{{ PAYSTACK_PUBLIC_KEY }}',
-        email,
-        amount,
-        currency: 'GHS',
-        ref: data.data.reference,
-        metadata: { phone, tenant_id, unit_id },
-        callback: function (response) {
-          fetch(`/payments/api/verify/${response.reference}/`)
-            .then(res => res.json())
-            .then(result => {
-              alert("Payment " + result.message);
-              location.reload();
-            });
-        },
-        onClose: function () {
-          alert("Transaction cancelled");
-        }
-      });
-      handler.openIframe();
-    } else {
-      alert("Failed to initialize payment");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Error processing payment");
-  });
-}
-</script>
+  <!-- Paystack + Custom Logic -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="{% static 'js/payment.js' %}"></script>
 {% endblock %}

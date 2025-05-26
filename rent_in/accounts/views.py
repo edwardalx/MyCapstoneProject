@@ -21,11 +21,17 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework.views import APIView
+from my_properties.models import Property
 # Create your views here.
 
 User = get_user_model()
 class RentInHome(generic.TemplateView):
-    template_name ='accounts/home.html'
+    template_name = 'accounts/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['properties'] = Property.objects.all()
+        return context
 
 class RentInRegisterVIew(generic.CreateView):
     form_class = TenantForm
