@@ -1,6 +1,7 @@
 # payments/forms.py
 from django import forms
-from .models import Tenant, Property, Tenancy_Agreement
+from .models import Tenant, Tenancy_Agreement
+from my_properties.models import Property
 
 PROVIDER_CHOICES = [
     ('mtn', 'MTN'),

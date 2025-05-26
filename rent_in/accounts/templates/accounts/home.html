@@ -6,6 +6,9 @@
 
 {% block extra_js %}
 <script>
+  const makePaymentUrl = "{% url 'make_payment' %}";
+  const listProperties = "{% url 'property_list' %}";
+  const home = "{% url 'home' %}"
   document.addEventListener("DOMContentLoaded", function () {
     function parseJwt(token) {
       try {
@@ -49,21 +52,24 @@
     const token = localStorage.getItem("access");
     const isLoggedIn = token && isTokenValid(token);
 
-    if (isLoggedIn) {
-      navLinks.innerHTML = `
-        <li><button class="transparent-btn" onclick="logout()">LOGOUT</button></li>
-        <li><a href="/make_payment/">MAKE PAYMENT</a></li>
-        <li><a href="/payment_history/">PAYMENT HISTORY</a></li>
-        <li><a href="/register/">REGISTER</a></li>
-        <li><a href="#css-questions">PROPERTIES</a></li>
-      `;
-    } else {
-      navLinks.innerHTML = `
-        <li><a href="/login/">LOGIN</a></li>
-        <li><a href="/register/">REGISTER</a></li>
-        <li><a href="#css-questions">PROPERTIES</a></li>
-      `;
-    }
+    let linksHtml = `<li><a href="/">HOME</a></li>`;
+
+  if (isLoggedIn) {
+    linksHtml += `
+      <li><button class="transparent-btn" onclick="logout()">LOGOUT</button></li>
+      <li><a href="${makePaymentUrl}">MAKE PAYMENT</a></li>
+      <li><a href="/payment_history/">PAYMENT HISTORY</a></li>
+      <li><a href="/register/">REGISTER</a></li>
+      <li><a href="${listProperties}">PROPERTIES</a></li>
+    `;
+  } else {
+    linksHtml += `
+      <li><a href="/login/">LOGIN</a></li>
+      <li><a href="/register/">REGISTER</a></li>
+    `;
+  }
+
+  navLinks.innerHTML = linksHtml;
   });
 </script>
 {% endblock %}
