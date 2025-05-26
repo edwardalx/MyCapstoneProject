@@ -40,10 +40,10 @@
     <input type="email" id="email" value="{{ user.email }}" required><br><br>
 
     <label>Phone Number:</label><br>
-    <input type="text" id="phone" value="{{ user.phoneNo }}" required><br><br>
+    <input type="text" id="phone"  required><br><br>
 
     <label>Amount (GHS):</label><br>
-    <input type="number" id="amount" value="{% if unit %}{{ unit.cost }}{% endif %}" readonly><br><br>
+    <input type="number" id="amount" value="{% if unit %}{{ unit.cost }}{% endif %}"><br><br>
 
     <label>Provider:</label><br>
     <select id="provider" required>
