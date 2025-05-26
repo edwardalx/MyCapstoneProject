@@ -16,6 +16,7 @@ class Unit(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='units')
     floor = models.IntegerField()
     room_number = models.CharField(max_length=14, blank=True, null=True)
+    image_url = models.URLField(max_length=500)
     cost = models.IntegerField(blank=True, null=True)
     max_no_of_people = models.IntegerField(blank=True, null=True)
     availability = models.BooleanField(default=True)

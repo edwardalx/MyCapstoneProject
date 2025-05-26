@@ -1,0 +1,29 @@
+{% extends "accounts/new_base.html" %}
+{% load static %}
+{% block content %}
+<div class="units-container">
+    {% for unit in units %}
+        <div class="unit-card" data-unit-id="{{ unit.id }}">
+            <img src="{{ unit.image.url }}" alt="Image of {{ unit.name }}" class="unit-image">
+            <div class="unit-details">
+                <h3>{{ unit.name }}</h3>
+                <p>Type: {{ unit.unit_type }}</p>
+                <p>Price: ${{ unit.price }}/month</p>
+                <button type="button" class="select-unit-btn" data-unit-id="{{ unit.id }}">Select Unit</button>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-units">
+            <p>No units available for this property.</p>
+        </div>
+    {% endfor %}
+</div>
+<div style="text-align: center; margin-top: 20px;">
+    <button id="proceedToPaymentBtn" style="display: none;" onclick="goToPayment()">
+        Proceed to Payment
+    </button>
+</div>
+<script>
+  const makePaymentUrl = "{% url 'make_payment' %}";
+</script>
+{% endblock %}

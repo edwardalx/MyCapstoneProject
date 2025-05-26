@@ -205,32 +205,10 @@ input {
   text-align: right;
 }
 
-.question-block {
-  text-align: left;
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  padding-top: 5px;
-}
-
 h3 {
   margin-top: 5px;
   padding-left: 15px;
   font-size: 1.375rem;
-}
-
-h3::before {
-  content: "Question #";
-}
-
-.question {
-  border: none;
-  padding-bottom: 0;
-}
-
-.answers-list {
-  list-style: none;
-  padding: 0;
 }
 
 button {
@@ -295,7 +273,7 @@ address {
   border-bottom: 4px solid #fdb347;
 }
 
-.gallery {
+/* .gallery {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -319,4 +297,4 @@ address {
   content: "";
   width: 350px;
 }
-
+ */

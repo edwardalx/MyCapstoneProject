@@ -59,7 +59,7 @@ class ImageApiViewset(viewsets.ModelViewSet):
     serializer_class = ImageSerialzer
 
 class SelectUnitView(TemplateView):
-    template_name = 'accounts/select_unit.html'
+    template_name = 'accounts/unit_Img.html'
 
 def property_list(request):
     properties = Property.objects.all()

@@ -9,6 +9,7 @@
     <link rel="icon" href="{% static 'accounts/favicon.ico' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'accounts/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/new_styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/properties_list.css' %}">
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -23,21 +24,24 @@
     </header>
 
     <main>
-      {% block content %}{% endblock %}
       <header class="header">
         <h1>LIST OF PROPERTIES</h1>
       </header>
-
-      <div class="gallery">
-        {% for property in properties %}
-          <div class="property-item"
-     data-id="{{ property.id }}"
-     data-name="{{ property.name|escapejs }}"
-     onclick="selectPropertyFromElement(this)">
-  <img src="{{ property.image_url }}" alt="{{ property.name }}">
-</div>
-        {% endfor %}
+      {% block content %}{% endblock %}
+        <div class="gallery">
+       {% for property in properties %}
+      <div class="property-card"
+           data-id="{{ property.id }}"
+           data-name="{{ property.name|escapejs }}"
+           onclick="selectPropertyFromElement(this)">
+           
+        <img src="{{ property.image_url }}" alt="{{ property.name }}">
+        
+        <h3>{{ property.name }}</h3>
+        <p>{{ property.location }}</p>
       </div>
+    {% endfor %}
+  </div>
     </main>
 
     <footer>
@@ -48,17 +52,11 @@
         Ghana
       </address>
     </footer>
-
-    <script src="{% static 'js/scripts.js' %}"></script>
-    <script>
-  function selectPropertyFromElement(el) {
-    const propertyId = el.dataset.id;
-    const propertyName = el.dataset.name;
-    localStorage.setItem("selectedPropertyId", propertyId);
-    localStorage.setItem("selectedPropertyName", propertyName);
-    window.location.href = "{% url 'select_unit' %}";
-  }
+<script>
+  const selectUnitUrl = "{% url 'select_unit' %}";
 </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="{% static 'js/properties_list.js' %}"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>
