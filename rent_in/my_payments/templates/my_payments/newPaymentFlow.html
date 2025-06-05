@@ -1,73 +1,81 @@
 {% extends "accounts/new_base.html" %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/payment.css' %}">
+{% endblock %}
+
 {% block content %}
-<section>
-  <h2>Make a Payment</h2>
+<section class="payment-container">
+  <h2 class="payment-title">Make a Payment</h2>
 
-  <!-- Property Dropdown -->
-  <label for="property">Property:</label><br>
-  <select id="property" name="property" required {% if property %}disabled{% endif %}>
-    {% if property %}
-      <option value="{{ property.id }}" selected>{{ property.name }}</option>
-    {% else %}
-      <option value="">-- Select Property --</option>
-      {% for p in properties %}
-        <option value="{{ p.id }}">{{ p.name }}</option>
-      {% endfor %}
-    {% endif %}
-  </select><br><br>
+  <div class="form-group">
+    <label for="property" class="form-label">Property:</label>
+    <select id="property" name="property" class="form-select" required {% if property %}disabled{% endif %}>
+      {% if property %}
+        <option value="{{ property.id }}" selected>{{ property.name }}</option>
+      {% else %}
+        <option value="">-- Select Property --</option>
+        {% for p in properties %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      {% endif %}
+    </select>
+  </div>
 
-  <!-- Unit Dropdown -->
-  <label for="unit">Room:</label><br>
-  <select id="unit" name="unit" required {% if unit %}disabled{% endif %}>
-    {% if unit %}
-      <option value="{{ unit.id }}" selected data-cost="{{ unit.cost }}">
-        Room {{ unit.room_number }} - GHS {{ unit.cost }}/month
-      </option>
-    {% else %}
-      <option value="">-- Select Room --</option>
-    {% endif %}
-  </select><br><br>
+  <div class="form-group">
+    <label for="unit" class="form-label">Room:</label>
+    <select id="unit" name="unit" class="form-select" required {% if unit %}disabled{% endif %}>
+      {% if unit %}
+        <option value="{{ unit.id }}" selected data-cost="{{ unit.cost }}">
+          Room {{ unit.room_number }} - GHS {{ unit.cost }}/month
+        </option>
+      {% else %}
+        <option value="">-- Select Room --</option>
+      {% endif %}
+    </select>
+  </div>
 
-  <!-- Payment Form -->
-  <form id="paymentForm" {% if not unit %}style="display:none;"{% endif %}>
+  <form id="paymentForm" class="payment-form" {% if not unit %}style="display:none;"{% endif %}>
     {% csrf_token %}
     <input type="hidden" id="tenant_id" value="{{ user.id }}">
     <input type="hidden" id="unit_id" value="{% if unit %}{{ unit.id }}{% endif %}">
 
-    <label>Email:</label><br>
-    <input type="email" id="email" value="{{ user.email }}" required><br><br>
+    <div class="form-group">
+      <label class="form-label">Email:</label>
+      <input type="email" id="email" class="form-input" value="{{ user.email }}" required>
+    </div>
 
-    <label>Phone Number:</label><br>
-    <input type="text" id="phone"  required><br><br>
+    <div class="form-group">
+      <label class="form-label">Phone Number:</label>
+      <input type="text" id="phone" class="form-input" required>
+    </div>
 
-    <label>Amount (GHS):</label><br>
-    <input type="number" id="amount" value="{% if unit %}{{ unit.cost }}{% endif %}"><br><br>
+    <div class="form-group">
+      <label class="form-label">Amount (GHS):</label>
+      <input type="number" id="amount" class="form-input" value="{% if unit %}{{ unit.cost }}{% endif %}" readonly>
+    </div>
 
-    <label>Provider:</label><br>
-    <select id="provider" required>
-      <option value="">-- Select Network --</option>
-      <option value="mtn">MTN</option>
-      <option value="vodafone">Vodafone</option>
-      <option value="airteltigo">AirtelTigo</option>
-    </select><br><br>
+    <div class="form-group">
+      <label class="form-label">Provider:</label>
+      <select id="provider" class="form-select" required>
+        <option value="">-- Select Network --</option>
+        <option value="mtn">MTN</option>
+        <option value="vodafone">Vodafone</option>
+        <option value="airteltigo">AirtelTigo</option>
+      </select>
+    </div>
 
-    <button type="button" onclick="payWithPaystack()">Pay Now</button>
+    <button type="button" class="payment-button" onclick="payWithPaystack()">Pay Now</button>
   </form>
 </section>
 {% endblock %}
 
 {% block extra_js %}
-  <!-- Indicates whether unit was prepopulated to auto-show form -->
   {{ unit|yesno:"true,false"|json_script:"unit-data" }}
-
-  <!-- Set your URL route name here -->
   <script>
     window.initializePaymentUrl = "{% url 'initialize_payment' %}";
   </script>
-
-  <!-- Paystack + Custom Logic -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="{% static 'js/payment.js' %}"></script>
 {% endblock %}

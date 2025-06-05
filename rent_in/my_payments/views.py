@@ -133,7 +133,7 @@ def initialize_payment(request):
         return Response({"error": "Missing required fields"}, status=400)
 
     reference = str(uuid.uuid4())
-
+    callback_url= f"https://edwardalx.pythonanywhere.com/payments/verify/{reference}/"
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json",
@@ -150,7 +150,7 @@ def initialize_payment(request):
             "unit_id": unit_id,
             "provider": provider
         },
-        "callback_url": "https://yourdomain.com/payments/verify/"
+        "callback_url": callback_url
     }
 
     try:
