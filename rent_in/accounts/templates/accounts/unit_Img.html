@@ -6,12 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="gallery">
-    <div class="payment-btn-container">
+<div class="payment-header">
     <button id="proceedToPaymentBtn" onclick="goToPayment()">
         Proceed to Payment
     </button>
 </div>
+
+<div class="gallery">
     {% for unit in units %}
         <div class="unit-card" data-unit-id="{{ unit.id }}">
             <img src="{{ unit.image_url }}" alt="Image of Unit {{ unit.room_number }}" class="unit-image">
@@ -29,12 +30,6 @@
             <p>No units available for this property.</p>
         </div>
     {% endfor %}
-</div>
-
-<div class="payment-btn-container">
-    <button id="proceedToPaymentBtn" onclick="goToPayment()">
-        Proceed to Payment
-    </button>
 </div>
 
 <script src="{% static 'js/unit_list.js' %}"></script>
