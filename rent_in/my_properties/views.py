@@ -70,10 +70,13 @@ class SelectUnitView(TemplateView):
     
 def unit_list(request, property_id):  # Remove self, **kwargs
     units = Unit.objects.filter(property_id=property_id)
-    return render(request, 'accounts/unit_Img.html', {
-        'units': units,
+    context = {
+        "units": units,
+        "is_authenticated": request.user.is_authenticated,
         'property_id': property_id,
-    })
+    }
+    return render(request, 'accounts/unit_Img.html', context)
+
 def property_list(request):
     properties = Property.objects.all()
     return render(request, 'accounts/propertyImg.html', {'properties': properties})

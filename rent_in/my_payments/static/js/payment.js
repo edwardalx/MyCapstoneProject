@@ -2,7 +2,31 @@ document.addEventListener('DOMContentLoaded', function () {
   const propertySelect = document.getElementById('property');
   const unitSelect = document.getElementById('unit');
   const paymentForm = document.getElementById('paymentForm');
-
+  const reference = getQueryParam('reference') || getQueryParam('trxref');
+  const token = localStorage.getItem("access");
+if (reference && token) {
+      fetch(`/api/payments/verify/${reference}/?reference=${reference}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) {
+            return res.json().then(data => {
+              throw new Error(data.detail || 'Verification failed');
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          alert("✅ Payment Verified: " + data.message);
+        })
+        .catch(err => {
+          console.error('Verification error:', err);
+          alert("❌ Payment verification failed: " + err.message);
+        });
+      }
   // Load units dynamically when property changes
   if (propertySelect && !propertySelect.disabled) {
     propertySelect.addEventListener('change', function () {
@@ -119,4 +143,11 @@ function payWithPaystack() {
       console.error("Payment error:", error);
       alert("Failed to initialize payment: " + error.message);
     });
+    fetch('/api/payments/verify/4aa71043-4b41-42db-b6c4-8934e43303eb/', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${localStorage.getItem('access')}`
+  }
+});
+
 }

@@ -93,6 +93,77 @@
     background-color: #0b7dda;
     transform: translateY(-1px);
 }
+/* Login Modal Styling */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    max-width: 400px;
+    width: 90%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.modal-content .btn {
+    display: inline-block;
+    margin: 10px 5px 0 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.btn-login {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: #218838;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+@keyframes fadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {

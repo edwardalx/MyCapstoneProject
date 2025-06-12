@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.jwt_auth_middleware.JWTAuthenticationMiddleware',
     
 ]
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # default
@@ -157,7 +158,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 from datetime import timedelta
 
@@ -168,10 +172,11 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,  # Important for logout
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "/"
 AUTH_USER_MODEL = 'accounts.Tenant'
-PAYSTACK_SECRET_KEY = 'sk_test_b847ee6b2d0941ae038dd335d22435d9b11c16a6'
+PAYSTACK_SECRET_KEY = 'sk_test_5eb9d19b41ee9863fe5f4d6c8f133ae069029755'
 PAYSTACK_PUBLIC_KEY = 'pk_test_6dac536ffd7a4e361b1cc91ce3f80ed321b7bc69'
 LOGGING = {
     'version': 1,
@@ -181,9 +186,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # or INFO to reduce noise
+            'propagate': True,
+        },
     },
 }
 # #Security
@@ -201,3 +209,6 @@ CSRF_COOKIE_SECURE = True
 # SECURE_HSTS_PRELOAD = True
 # # Tell Django to trust the proxy’s HTTPS header
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_COOKIE_PATH = '/'
+SESSION_COOKIE_DOMAIN = None

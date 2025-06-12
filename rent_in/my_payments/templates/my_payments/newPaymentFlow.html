@@ -76,6 +76,12 @@
   <script>
     window.initializePaymentUrl = "{% url 'initialize_payment' %}";
   </script>
+  <script>
+    function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+  </script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="{% static 'js/payment.js' %}"></script>
 {% endblock %}

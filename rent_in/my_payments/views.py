@@ -17,15 +17,18 @@ from rest_framework import viewsets
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
+from rest_framework.decorators import api_view, permission_classes,authentication_classes
+from rest_framework import permissions,authentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from accounts.decorators import jwt_required
+
 
 import logging
 from django.conf import settings
 logger = logging.getLogger(__name__)
 # Create your views here.
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY  # Replace with your actual key
-@login_required
+@jwt_required
 def payment_page(request):
     unit_id = request.GET.get("unit_id")
     unit = None
@@ -177,6 +180,7 @@ def initialize_payment(request):
 
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def verify_payment(request, reference):
     # This view will verify the payment status from Paystack (or another provider)

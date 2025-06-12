@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
             // Delay redirect slightly to ensure storage completes
             setTimeout(() => {
-              window.location.href = "/";
+              window.location.href = getNextUrl();
             }, 100);
           } else {
             showError("Login failed. Invalid credentials.");
@@ -51,5 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
+  function getNextUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("next") || "/";
+}
   });
   

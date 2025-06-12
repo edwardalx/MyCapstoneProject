@@ -119,12 +119,10 @@ class LogoutAPIView(generic.View):
 
 class PhoneLoginView(TokenObtainPairView):
     serializer_class = PhoneTokenObtainPairSerializer
+
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            user = User.objects.get(username=request.data['username'])
-            login(request, user)  # This establishes the session
-        return response
+        # Only handle JWT token response — no session login
+        return super().post(request, *args, **kwargs)
 
 @api_view(['POST'])
 def login_api(request):
@@ -141,16 +139,22 @@ def login_api(request):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
+    permission_classes = [permissions.AllowAny]  # Important: don't require auth to log out
     def post(self, request):
+        # Try to blacklist refresh token
         try:
             refresh_token = request.data.get("refresh")
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            pass  # Ignore if already blacklisted or invalid
+
+        # # Fully clear session if user is logged in
+        # if request.user.is_authenticated:
+        #     logout(request)
+        #     request.session.flush()
+
+        return Response(status=status.HTTP_205_RESET_CONTENT)
 
 def check_user_or_email(request):
     username = request.GET.get('username')

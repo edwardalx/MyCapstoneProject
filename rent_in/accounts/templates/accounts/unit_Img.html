@@ -3,9 +3,22 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/unit_list.css' %}">
+<!-- <link rel="stylesheet" href="{% static 'css/login_modal.css' %}"> -->
 {% endblock %}
 
 {% block content %}
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <h3>Login Required</h3>
+        <p>Please log in to select a unit and proceed with payment.</p>
+        <div>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-login">Log In</a>
+            <button onclick="closeModal()" class="btn btn-cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div class="payment-header">
     <button id="proceedToPaymentBtn" onclick="goToPayment()">
         Proceed to Payment
@@ -32,9 +45,12 @@
     {% endfor %}
 </div>
 
-<script src="{% static 'js/unit_list.js' %}"></script>
 <script>
-    // Pass Django URL to JavaScript
+    
+    const token = localStorage.getItem("access");
+    const isAuthenticated = token !== null;
     const makePaymentUrl = "{% url 'make_payment' %}";
 </script>
+<script src="{% static 'js/unit_list.js' %}"></script>
+<!-- <script src="{% static 'js/login_modal.js' %}"></script> -->
 {% endblock %}
