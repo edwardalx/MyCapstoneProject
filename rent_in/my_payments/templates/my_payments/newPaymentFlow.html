@@ -55,6 +55,10 @@
       <label class="form-label">Amount (GHS):</label>
       <input type="number" id="amount" class="form-input" value="{% if unit %}{{ unit.cost }}{% endif %}" readonly>
     </div>
+    <div class="form-group">
+      <label class="form-label">Reference:</label>
+      <input type="text" id="reference" class="form-input" required>
+    </div>
 
     <div class="form-group">
       <label class="form-label">Provider:</label>

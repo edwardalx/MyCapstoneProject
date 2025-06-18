@@ -33,6 +33,7 @@ def payment_page(request):
     unit_id = request.GET.get("unit_id")
     unit = None
     property = None
+    reference = None
 
     # Try to get the unit if passed in querystring
     if unit_id:
@@ -53,6 +54,7 @@ def payment_page(request):
         "tenancy_agreement": agreement,
         "unit": unit,
         "property": property,
+        "reference":reference,
         "properties": Property.objects.all(),  # Needed for the property <select>
     })
 
@@ -78,65 +80,92 @@ def paystack_webhook(request):
     signature = request.headers.get('X-Paystack-Signature')
     body = request.body
 
-    # Verify Paystack signature
-    if not signature or not hmac.compare_digest(signature, hmac.new(secret, body, hashlib.sha512).hexdigest()):
+    expected_signature = hmac.new(secret, body, hashlib.sha512).hexdigest()
+    if not signature or not hmac.compare_digest(signature, expected_signature):
         return JsonResponse({"error": "Invalid signature"}, status=403)
 
     payload = json.loads(body)
-
     if payload['event'] == 'charge.success':
         data = payload['data']
         reference = data['reference']
-        amount = int(data['amount']) // 100  # Convert from kobo to GHS
-        email = data['customer']['email']
-        phone = data.get('metadata', {}).get('phone')
-        tenant_id = data.get('metadata', {}).get('tenant_id')
-        unit_id = data.get('metadata', {}).get('unit_id')
+        amount = int(data['amount']) // 100
+        metadata = data.get('metadata', {})
 
         try:
             payment = Payment.objects.get(reference=reference)
+
+            if payment.status == 'success':
+                return HttpResponse(status=200)  # Already handled
+
             payment.status = 'success'
             payment.amount = amount
             payment.save()
 
-            # Get related tenant and tenancy agreement
-            tenant = Tenant.objects.get(tenant_id=tenant_id)
-            unit = Unit.objects.get(unit_id=unit_id)
-            # Update or create Tenancy_Agreement
-            tenancy_agreement, created = Tenancy_Agreement.objects.get_or_create(tenant=tenant)
-            tenancy_agreement.total_amount_paid += amount
+            tenant = Tenant.objects.get(id=metadata['tenant_id'])
+            unit = Unit.objects.get(id=metadata['unit_id'])
+
+            tenancy_agreement, _ = Tenancy_Agreement.objects.get_or_create(
+                tenant=tenant,
+                unit=unit,
+                defaults={
+                    'contract_start_date': timezone.now().date(),
+                    'contract_duration': 12  # or from metadata
+                }
+            )
+            tenancy_agreement.total_amount_paid = (tenancy_agreement.total_amount_paid or 0) + amount
             tenancy_agreement.save()
-            # Update or create PaymentSummary
-            summary, created = PaymentSummary.objects.get_or_create(tenancy_agreement=tenancy_agreement)
-            summary.total_amount_paid += amount
+
+            summary, _ = PaymentSummary.objects.get_or_create(tenancy_agreement=tenancy_agreement)
+            summary.total_amount_paid = (summary.total_amount_paid or 0) + amount
             summary.amount_left = unit.cost - summary.total_amount_paid
             summary.last_payment_date = timezone.now().date()
             summary.save()
-           
+
+            unit.availability = False
+            unit.save()
 
         except Payment.DoesNotExist:
             return JsonResponse({"error": "Payment not found"}, status=404)
-        except (Tenant.DoesNotExist, Tenancy_Agreement.DoesNotExist):
-            return JsonResponse({"error": "Tenant or agreement not found"}, status=404)
+        except Tenant.DoesNotExist:
+            return JsonResponse({"error": "Tenant not found"}, status=404)
+        except Unit.DoesNotExist:
+            return JsonResponse({"error": "Unit not found"}, status=404)
 
     return HttpResponse(status=200)
 
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.conf import settings
+from .models import Payment, Unit
+import uuid, requests
+
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def initialize_payment(request):
     email = request.data.get('email')
     phone = request.data.get('phone')
-    amount = request.data.get('amount')  # Should be in pesewas
+    amount = request.data.get('amount')  # Should be in pesewas (e.g. 20000 for GHS 200)
     provider = request.data.get('provider')
     unit_id = request.data.get('unit_id')
 
-    tenant_id = request.user.id  # ✅ Secure tenant_id from logged-in user
+    tenant = request.user  # Logged-in tenant
 
+    # Validate inputs
     if not all([email, phone, amount, provider, unit_id]):
         return Response({"error": "Missing required fields"}, status=400)
 
+    try:
+        unit = Unit.objects.get(id=unit_id)
+    except Unit.DoesNotExist:
+        return Response({"error": "Unit does not exist"}, status=404)
+
+    # Generate unique reference
     reference = str(uuid.uuid4())
-    callback_url= f"https://edwardalx.pythonanywhere.com/payments/verify/{reference}/"
+    callback_url = f"http://127.0.0.1:8000/payments/receipt/{reference}/"
+
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json",
@@ -149,8 +178,8 @@ def initialize_payment(request):
         "reference": reference,
         "metadata": {
             "phone": phone,
-            "tenant_id": tenant_id,
-            "unit_id": unit_id,
+            "tenant_id": tenant.id,
+            "unit_id": unit.id,
             "provider": provider
         },
         "callback_url": callback_url
@@ -163,7 +192,19 @@ def initialize_payment(request):
             json=payload
         )
         res_data = response.json()
+
         if res_data.get('status'):
+            # ✅ Create the Payment record BEFORE redirect
+            Payment.objects.create(
+                tenant=tenant,
+                unit=unit,
+                amount=int(amount) / 100,  # Store in GHS
+                phone=phone,
+                provider=provider,
+                reference=reference,
+                status='pending'
+            )
+
             return Response({
                 "status": True,
                 "message": "Payment initiated",
@@ -183,20 +224,44 @@ def initialize_payment(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def verify_payment(request, reference):
-    # This view will verify the payment status from Paystack (or another provider)
-    # For simplicity, let's assume the payment is successful.
+    # 1. Verify with Paystack
+    url = f"https://api.paystack.co/transaction/verify/{reference}"
+    headers = {
+        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"
+    }
+
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        return Response({"detail": "Paystack verification failed"}, status=response.status_code)
+
+    data = response.json()["data"]
+    if data["status"] != "success":
+        return Response({"detail": "Transaction not successful"}, status=400)
+
+    # 2. Update payment
     payment = get_object_or_404(Payment, reference=reference)
+    if payment.status != "completed":
+        payment.status = "completed"
+        payment.save()
 
-    # Once payment is successful, update the status of the payment
-    payment.status = "completed"
-    payment.save()
+        # 3. Mark unit as unavailable
+        unit = payment.unit
+        unit.availability = False
+        unit.save()
 
-      # Mark unit as unavailable
-    unit = payment.unit
-    unit.availability = False
-    unit.save()
-    # Return success message
     return Response({
         "status": "success",
-        "message": "Payment successfully verified."
+        "message": "Payment successfully verified.",
+        "reference": payment.reference,
+        "amount": payment.amount, 
     })
+
+def payment_receipt(request, reference):
+    payment = get_object_or_404(Payment, reference=reference)
+    context = {
+        "reference": reference,
+        "amount": payment.amount,
+        "status": payment.status
+    }
+    return render(request, "my_payments/receipt.html", context)
+

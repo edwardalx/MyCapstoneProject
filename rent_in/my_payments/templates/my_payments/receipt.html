@@ -1,0 +1,49 @@
+{% extends "accounts/new_base.html" %}
+{% load static %}
+
+{% block content %}
+  <section class="receipt-container">
+    <h2>🎉 Payment Receipt</h2>
+    <div id="receipt-details">
+      <p>Loading receipt...</p>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const reference = "{{ reference }}";
+  const token = localStorage.getItem("access");
+
+  if (token && reference) {
+    fetch(`/payments/verify/${reference}/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Verification failed");
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById("receipt-details").innerHTML = `
+        <p><strong>Status:</strong> ${data.status}</p>
+        <p><strong>Message:</strong> ${data.message}</p>
+        <p><strong>Reference:</strong> ${reference}</p>
+        <p><strong>Amount Paid:</strong> GHS ${data.amount}</p>
+      `;
+    })
+    .catch(err => {
+      document.getElementById("receipt-details").innerHTML = `
+        <p style="color:red;">❌ Failed to load receipt.</p>
+        <p>${err.message}</p>
+      `;
+    });
+  } else {
+    document.getElementById("receipt-details").innerHTML = `
+      <p style="color:red;">Missing reference or authentication token.</p>
+    `;
+  }
+</script>
+{% endblock %}

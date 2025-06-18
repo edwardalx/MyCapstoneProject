@@ -14,6 +14,5 @@ path('api/initialize/', views.initialize_payment, name='initialize_payment'),
 path('verify/<str:reference>/', views.verify_payment, name='verify_payment'),
 path('make-payment/', views.payment_page, name='make_payment'),
 path('payment-history/', views.payment_history, name='payment_history'),
-
-
+path('receipt/<str:reference>/', views.payment_receipt, name='payment_receipt'),
 ]

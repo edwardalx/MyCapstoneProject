@@ -5,10 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const reference = getQueryParam('reference') || getQueryParam('trxref');
   const token = localStorage.getItem("access");
 if (reference && token) {
-      fetch(`/api/payments/verify/${reference}/?reference=${reference}`, {
+      fetch(`/payments/verify/${reference}/?reference=${reference}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         }
       })
         .then(res => {
@@ -143,7 +144,7 @@ function payWithPaystack() {
       console.error("Payment error:", error);
       alert("Failed to initialize payment: " + error.message);
     });
-    fetch('/api/payments/verify/4aa71043-4b41-42db-b6c4-8934e43303eb/', {
+    fetch('/payments/verify/4aa71043-4b41-42db-b6c4-8934e43303eb/', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('access')}`

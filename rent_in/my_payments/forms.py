@@ -14,7 +14,7 @@ class PaymentForm(forms.Form):
     phone = forms.CharField(label="Phone Number", max_length=15, widget=forms.TextInput(attrs={'class': 'form-control'}))
     provider = forms.ChoiceField(choices=PROVIDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     amount = forms.IntegerField(label="Amount (pesewas)", min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    
+    reference = forms.CharField(label="Reference", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
     tenancy_agreement = forms.ModelChoiceField(
         queryset=Tenancy_Agreement.objects.all(),
         label="Tenancy Agreement",
