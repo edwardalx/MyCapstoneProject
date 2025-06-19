@@ -164,7 +164,7 @@ def initialize_payment(request):
 
     # Generate unique reference
     reference = str(uuid.uuid4())
-    callback_url = f"http://127.0.0.1:8000/payments/receipt/{reference}/"
+    callback_url = f"https://edwardalx.pythonanywhere.com/payments/receipt/{reference}/"
 
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
