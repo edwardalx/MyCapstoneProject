@@ -10,6 +10,7 @@
     <link rel="icon" href="{% static 'my_payments/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/new_styles.css' %}" />
     <link rel="stylesheet" href="{% static 'css/properties_list.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -19,10 +20,12 @@
       <nav class="navbar">
         <ul class="nav-links" id="nav-links">
           <!-- Filled by JS -->
+            <li><a href="/">HOME</a></li>
+            <li><a href="/register/">REGISTER</a></li>
         </ul>
       </nav>
     </header>
-
+<div id="toast" class="custom-toast hidden"></div>
     <main>
       <header class="header">
         <h1>LIST OF PROPERTIES</h1>
@@ -55,7 +58,8 @@
 <script>
   const selectUnitBaseUrl = "{% url 'select_unit' 0 %}";
 </script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
     <script src="{% static 'js/properties_list.js' %}"></script>
     {% block extra_js %}{% endblock %}

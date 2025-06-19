@@ -27,20 +27,19 @@ document.addEventListener("DOMContentLoaded", function () {
           if (data.access && data.refresh) {
             localStorage.setItem("access", data.access);
             localStorage.setItem("refresh", data.refresh);
-  
-            alert("Logged in!");
+            showToast('You have successfully logged in !!!',5000);
   
             // Delay redirect slightly to ensure storage completes
             setTimeout(() => {
               window.location.href = getNextUrl();
-            }, 100);
+            }, 3000);
           } else {
             showError("Login failed. Invalid credentials.");
           }
         })
         .catch(error => {
           console.error("Login error:", error);
-          showError("An error occurred while logging in.");
+          showError("You've enter incorrect phone or password.  Try again!!!");
         });
   
       function showError(message) {
@@ -55,5 +54,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const params = new URLSearchParams(window.location.search);
   return params.get("next") || "/";
 }
+function showToast(message, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.remove('hidden');
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.classList.add('hidden');
+  }, duration);
+}
+
+
   });
   

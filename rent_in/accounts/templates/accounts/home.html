@@ -51,6 +51,13 @@
   }
 }
 
+toastr.options = {
+    "closeButton": true,
+    "progressBar": false,
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "positionClass": "toast-top-right"
+};
   async function logout() {
   try {
     if (refreshToken) {
@@ -81,8 +88,11 @@
   } finally {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    alert("You are logged out.");
-    window.location.href = "/";
+    toastr.success("You have logged out successfully ...");
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 5000);
   }
 }
 
@@ -94,13 +104,17 @@
       const timeRemaining = (data.exp * 1000) - Date.now();
       if (timeRemaining > 0) {
         setTimeout(() => {
-          alert("Session expired. Logging out...");
+          showToast('Session expired. Logging out...','Timeout');
           logout();
         }, timeRemaining);
       } else {
         logout(); // Token already expired
       }
     }
+    function showToast(message, type = "info") {
+    // Example using a simple alert (replace this with better UI later)
+    alert(`${type.toUpperCase()}: ${message}`);
+}
 
     // Dynamic nav links
     const navLinks = document.getElementById("nav-links");

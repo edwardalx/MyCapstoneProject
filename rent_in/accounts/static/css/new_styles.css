@@ -272,6 +272,31 @@ address {
   color: #fff;
   border-bottom: 4px solid #fdb347;
 }
+.custom-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 20px 40px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  font-size: 18px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-toast.show {
+  opacity: 1;
+}
+
+.custom-toast.hidden {
+  display: none;
+}
+
+
 
 /* .gallery {
   display: flex;
